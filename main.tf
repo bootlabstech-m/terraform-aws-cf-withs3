@@ -15,6 +15,9 @@ assume_role_policy = <<EOF
  ]
 }
 EOF
+  lifecycle {
+    ignore_changes = [tags]
+  }
 }
 resource "aws_iam_policy" "iam_policy_for_lambda" {
  
@@ -37,6 +40,9 @@ resource "aws_iam_policy" "iam_policy_for_lambda" {
  ]
 }
 EOF
+  lifecycle {
+    ignore_changes = [tags]
+  }
 }
 resource "aws_iam_role_policy_attachment" "attach_iam_policy_to_iam_role" {
  role        = aws_iam_role.lambda_role.name
@@ -47,6 +53,9 @@ resource "aws_iam_role_policy_attachment" "attach_iam_policy_to_iam_role" {
 resource "aws_s3_bucket" "lambda_function_bucket" {
   bucket = var.source_bucket  
   acl    = "private"
+    lifecycle {
+    ignore_changes = [tags]
+  }
 }
 
 # Create a Lambda function with the S3 bucket as the source code
@@ -63,6 +72,9 @@ resource "aws_lambda_function" "my_lambda_function" {
   source_code_hash = filebase64sha256("${path.module}/function.zip")
   s3_bucket        = aws_s3_bucket.lambda_function_bucket.id
   s3_key           = "function.zip"
+    lifecycle {
+    ignore_changes = [tags]
+  }
 }
 
 # Upload the function code to the S3 bucket
@@ -70,4 +82,7 @@ resource "aws_s3_bucket_object" "function_zip" {
   bucket = aws_s3_bucket.lambda_function_bucket.id
   key    = "function.zip"
   source = "function.zip"
+    lifecycle {
+    ignore_changes = [tags]
+  }
 }
